@@ -29,17 +29,31 @@ const handleAddItem = event => {
 }
 
 const validItems = ['cheesecake', 'apple pie', 'carrot cake']
-const handleItemName = event => {
-  const itemName = event.target.value
-  const errorMsg = window.document.getElementById('error-msg')
+const checkFormValues = event => {
+  const itemName = document.querySelector('input[name="name"]').value
+  const quantity = document.querySelector('input[name="quantity"]').value
+
+  const itemNameIsEmpty = itemName === ''
+  const itemNameIsInvalid = !validItems.includes(itemName)
+  const quantityIsEmpty = quantity === ''
+
+  const errorMsg = document.getElementById('error-msg')
 
   if (itemName === '') {
     errorMsg.innerHTML = ''
-  } else if (!validItems.includes(itemName)) {
+  } else if (itemNameIsInvalid) {
     errorMsg.innerHTML = `${itemName} is not a valid item.`
   } else {
     errorMsg.innerHTML = `${itemName} is valid!`
   }
+
+  const submitButton = document.querySelector('button[type="submit"]')
+
+  if (itemNameIsEmpty || itemNameIsInvalid || quantityIsEmpty) {
+    submitButton.disabled = true
+  } else {
+    submitButton.disabled = false
+  }
 }
 
-module.exports = { updateItemList, handleAddItem, handleItemName }
+module.exports = { updateItemList, handleAddItem, checkFormValues }

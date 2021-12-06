@@ -1,7 +1,7 @@
-const { handleAddItem, handleItemName } = require('./domController')
+const { handleAddItem, checkFormValues } = require('./domController')
 
 const form = document.getElementById('add-item-form')
 form.addEventListener('submit', handleAddItem)
+form.addEventListener('input', checkFormValues)
 
-const itemInput = document.querySelector('input[name="name"]')
-itemInput.addEventListener('input', handleItemName)
+checkFormValues()
