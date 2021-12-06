@@ -9,6 +9,8 @@ beforeEach(() => {
 })
 
 describe('updateItemList', () => {
+  beforeAll(() => localStorage.clear())
+
   test('updates the DOM with the inventory items', () => {
     const inventory = {
       cheesecake: 5,
@@ -43,6 +45,13 @@ describe('updateItemList', () => {
     expect(screen.getByText('apple pie - Quantity: 2')).toHaveStyle({
       color: 'red',
     })
+  })
+
+  test('updates the localStorage with the inventory', () => {
+    const inventory = { cheesecake: 5, 'apple pie': 2 }
+    updateItemList(inventory)
+
+    expect(localStorage.getItem('inventory')).toEqual(JSON.stringify(inventory))
   })
 })
 

@@ -3,21 +3,64 @@ const { screen, getByText, fireEvent } = require('@testing-library/dom')
 
 const initialHtml = fs.readFileSync('./public/index.html')
 
+beforeEach(() => localStorage.clear())
 beforeEach(() => {
   document.body.innerHTML = initialHtml
   jest.resetModules()
   require('../src/main')
 })
 
-test('adding item through the form', () => {
-  screen.getByPlaceholderText('Item name').value = 'cheesecake'
-  screen.getByPlaceholderText('Quantity').value = '6'
+test('persists items between sessions', () => {
+  const itemField = screen.getByPlaceholderText('Item name')
+  fireEvent.input(itemField, {
+    target: { value: 'cheesecake' },
+    bubbles: true,
+  })
 
-  const event = new Event('submit')
-  const form = document.getElementById('add-item-form')
-  form.dispatchEvent(event)
+  const quantityField = screen.getByPlaceholderText('Quantity')
+  fireEvent.input(quantityField, {
+    target: { value: '6' },
+    bubbles: true,
+  })
+
+  const submitBtn = screen.getByText('Add to inventory')
+  fireEvent.click(submitBtn)
+
+  const itemListBefore = document.getElementById('item-list')
+  expect(itemListBefore.childNodes).toHaveLength(1)
+  expect(
+    getByText(itemListBefore, 'cheesecake - Quantity: 6')
+  ).toBeInTheDocument()
+
+  document.body.innerHTML = initialHtml
+  jest.resetModules()
+  require('../src/main')
+
+  const itemListAfter = document.getElementById('item-list')
+  expect(itemListAfter.childNodes).toHaveLength(1)
+  expect(
+    getByText(itemListAfter, 'cheesecake - Quantity: 6')
+  ).toBeInTheDocument()
+})
+
+test('adding item through the form', () => {
+  const itemField = screen.getByPlaceholderText('Item name')
+  fireEvent.input(itemField, {
+    target: { value: 'cheesecake' },
+    bubbles: true,
+  })
+
+  const quantityField = screen.getByPlaceholderText('Quantity')
+  fireEvent.input(quantityField, {
+    target: { value: '6' },
+    bubbles: true,
+  })
+
+  const submitBtn = screen.getByText('Add to inventory')
+  fireEvent.click(submitBtn)
 
   const itemList = document.getElementById('item-list')
+  expect(itemList.childNodes).toHaveLength(1)
   expect(getByText(itemList, 'cheesecake - Quantity: 6')).toBeInTheDocument()
 })
 
